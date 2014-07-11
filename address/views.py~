@@ -10,7 +10,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 
 
-from address.key import CECKey, CPubKey
+from address.key import *
 
 
 def address(request):
@@ -19,7 +19,7 @@ def address(request):
     a = time.time()
     if not pri:
         pri = ''
-        for i in range(1, 2):
+        for i in range(1, 150):
             pri += str(random.random()*1000000)
         print pri
         pri = hashlib.sha256(pri).hexdigest()
@@ -27,19 +27,16 @@ def address(request):
     pri02 = str(pri)
     import copy 
     pri01 = copy.copy(pri02)
-    pub03 = gen_pub01(pri01)
-    return HttpResponse(pub03)
+    #pub03 = gen_pub(pri01)
+    return HttpResponse(pub01)
 
 
 
-def gen_pub01(pkey):
-    pkey = '108a41977ebe5a5801b73dca4eb5d735f58621b63c3729f6d284dc57d4902869'
+def gen_pub(pkey, compressed=True):
     shex= pkey.decode('hex')
     addr = CECKey()
-    addr.set_compressed(compressed=True)
     addr.set_secretbytes(shex)
-
-
+    addr.set_compressed(compressed=True)
     pub = CPubKey(addr.get_pubkey(), addr)
 
     sha256=hashlib.sha256(pub)
